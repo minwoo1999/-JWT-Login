@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>회의실 등록</title>
+<title>회의실 등록</title>
+<link href="/css/com.css" rel="stylesheet" type="text/css" />
+<link href="/css/button.css" rel="stylesheet" type="text/css" />
+<script type="text/javaScript" language="javascript">
+
+function fncMtRoomClear() {
+  mtRoomForm.mtgPlaceNm.value       = "";
+  mtRoomForm.aceptncPosblNmpr.value = 5;
+  mtRoomForm.opnBeginTm.value       = "08:00";
+  mtRoomForm.opnEndTm.value         = "21:00";
+  mtRoomForm.lcDetail.value         = "";
+  mtRoomForm.lcSe[0].selected       = true;
+}
+
+function fncUpdateMtRoom(){
+  if(mtRoomForm.start_Time.value == ""){
+    alert("개방 오픈 시간을 선택하세요" />"); 
+    return false;
+  }
+  if(mtRoomForm.end_Time.value == ""){
+    alert("개방 종료 시간을 선택하세요"); 
+    return false;
+  }
+ if(parseInt(mtRoomForm.start_Time.value.substring(0,2)) >=         
+      parseInt(mtRoomForm.end_Time.value.substring(0,2))){
+    alert("개방오픈시간이 개방종료시간보다 늦거나 같습니다. 개방시간을 확인하세요.");
+    return false;
+  }
+      
+  return true;
+ 
+}
+  
+</script>
+</head> 
+<body>
+
+<form th:object="${mtRoomVO}" name="mtRoomForm" method="post" th:action="updateMtRoom" th:onsubmit="return fncUpdateMtRoom()"  enctype="multipart/form-data"> 
+
+
+<input type="hidden" name="picture" th:value="${mtRoomVO.picture}"/>">
+<input type="hidden" name="mrNo" th:value="${mtRoomVO.mrNo}"/>">
+
+<div class="wTableFrm">
+
+
+<h2>회의실 수정시발</h2>
+<table class="wTable">
+<colgroup>
+<col style="width:25%" />
+<col style="width:34%" />
+<col style="width:16%" />
+<col style="" />
+</colgroup>
+<tr><th>회의실명<span class="pilsu">*</span></th>
+<td class="left" colspan="3">
+    <input name="mr_Name" th:value="${mtRoomVO.mr_Name}" required="required" />
+</td></tr>
+<tr>
+<th>수용가능인원<span class="pilsu">*</span></th>
+<td class="left">
+<select name="capacity" title="수용가능인원" >
+       <option value="5"   th:selected="${mtRoomVO.capacity == 5}" >5명</option>
+       <option value="10"  th:selected="${mtRoomVO.capacity == 10}"> 10명</option>
+       <option value="15"  th:selected="${mtRoomVO.capacity == 15}"> 15명</option>
+       <option value="20"  th:selected="${mtRoomVO.capacity == 20}"> 20명</option>
+       <option value="25"  th:selected="${mtRoomVO.capacity == 25}"> 25명</option>
+       <option value="30"  th:selected="${mtRoomVO.capacity == 30}"> 30명</option>
+       <option value="50"  th:selected="${mtRoomVO.capacity == 50}"> 50명</option>
+       <option value="70"  th:selected="${mtRoomVO.capacity == 70}"> 70명</option>
+       <option value="100" th:selected="${mtRoomVO.capacity == 100}"> 100명</option>
+      </select>
+</td>
+<th>개방시간<span class="pilsu">*</span></th> 
+<td class="left">
+<select name="start_Time" title="개방시작시간">
+       <option value="08:00" th:selected="${mtRoomVO.start_Time == '08:00'}">08:00</option>
+       <option value="09:00" th:selected="${mtRoomVO.start_Time == '09:00'}">09:00</option>
+       <option value="10:00" th:selected="${mtRoomVO.start_Time == '10:00'}">10:00</option>
+       <option value="11:00" th:selected="${mtRoomVO.start_Time == '11:00'}">11:00</option>
+       <option value="12:00" th:selected="${mtRoomVO.start_Time == '12:00'}">12:00</option>
+       <option value="13:00" th:selected="${mtRoomVO.start_Time == '13:00'}">13:00</option>
+       <option value="14:00" th:selected="${mtRoomVO.start_Time == '14:00'}">14:00</option>
+       <option value="15:00" th:selected="${mtRoomVO.start_Time == '15:00'}">15:00</option>
+       <option value="16:00" th:selected="${mtRoomVO.start_Time == '16:00'}">16:00</option>
+       <option value="17:00" th:selected="${mtRoomVO.start_Time == '17:00'}">17:00</option>
+       <option value="18:00" th:selected="${mtRoomVO.start_Time == '18:00'}">18:00</option>
+       <option value="19:00" th:selected="${mtRoomVO.start_Time == '19:00'}">19:00</option>
+       <option value="20:00" th:selected="${mtRoomVO.start_Time == '20:00'}">20:00</option>
+       <option value="21:00" th:selected="${mtRoomVO.start_Time == '21:00'}">21:00</option>
+ </select>
+      ~  
+<select name="end_Time" title="개방종료시간">
+       <option value="08:00" th:selected="${mtRoomVO.end_Time == '08:00'}">08:00</option>
+       <option value="09:00" th:selected="${mtRoomVO.end_Time == '09:00'}">09:00</option>
+       <option value="10:00" th:selected="${mtRoomVO.end_Time == '10:00'}">10:00</option>
+       <option value="11:00" th:selected="${mtRoomVO.end_Time == '11:00'}">11:00</option>
+       <option value="12:00" th:selected="${mtRoomVO.end_Time == '12:00'}">12:00</option>
+       <option value="13:00" th:selected="${mtRoomVO.end_Time == '13:00'}">13:00</option>
+       <option value="14:00" th:selected="${mtRoomVO.end_Time == '14:00'}">14:00</option>
+       <option value="15:00" th:selected="${mtRoomVO.end_Time == '15:00'}">15:00</option>
+       <option value="16:00" th:selected="${mtRoomVO.end_Time == '16:00'}">16:00</option>
+       <option value="17:00" th:selected="${mtRoomVO.end_Time == '17:00'}">17:00</option>
+       <option value="18:00" th:selected="${mtRoomVO.end_Time == '18:00'}">18:00</option>
+       <option value="19:00" th:selected="${mtRoomVO.end_Time == '19:00'}">19:00</option>
+       <option value="20:00" th:selected="${mtRoomVO.end_Time == '20:00'}">20:00</option>
+       <option value="21:00" th:selected="${mtRoomVO.end_Time == '21:00'}">21:00</option>
+ </select>
+</td></tr>
+<tr><th>위치<span class="pilsu">*</span></th>
+<td class="left" colspan="3">
+<input name="location" th:value="${mtRoomVO.location}" cssStyle="width:509px" required="required" />
+<input name="building" th:value="${mtRoomVO.building}" required="required" />
+<input name="roomNo" th:value="${mtRoomVO.roomNo}" required="required" />
+</td>
+</tr>
+
+<!--  첨부파일 테이블 레이아웃 설정 Start.. -->
+<span th:if="${mtRoomVO.picture !='' }" >
+<tr>
+<th height="23" class="required_text" scope="row">이미지 파일</th>
+<td class="left" colspan="3">
+   <img th:src="@{|/images/${mtRoomVO.picture}|}" width="200" height="150" alt="첨부이미지">
+</td>
+</tr>
+</span>
+<!--  첨부파일 테이블 레이아웃 End. /cmm/fms/selectFileInfs.do -->
+<tr>
+<th>이미지 파일수정</th>
+<td class="left" colspan="3">
+    <input name="file_1" id="egovComFileUploader" type="file" title="첨부파일"/>
+    <div id="egovComFileList"></div>
+</td>
+</tr>
+
+</table>
+<!-- 하단 버튼 -->
+<div class="btn">
+<input class="s_submit" type="submit" value='저장' />
+<span class="btn_s"><a href="/mtRoomList?searchCondition=1" >목록</a></span>
+</div>
+<div style="clear:both;"></div>
+</div>
+
+</form>
+
+</body>
+</html>

@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jang.mtg.mapper.MtRoomMapper">
+
+
+	<select id="getMtRoomList" resultType="MtRoomVO">
+		SELECT *
+		FROM ( SELECT
+		ROWNUM AS
+		rnum,
+		a.*
+		FROM ( SELECT * FROM meetingroom
+		where mrNo is not
+		null
+		order by mrNo desc ) a
+		)
+		WHERE rnum between #{startRow} and
+		#{endRow}
+
+	</select>
+
+	<select id="getTotalRow2" parameterType="SearchVO"
+		resultType="int">
+		SELECT count(*) AS totalrow
+		FROM meetingroom
+		<if test="keyword != null">
+			<choose>
+				<when test="type == 'title'">AND title like '%'||#{keyword}||'%' </when>
+				<when test="type == 'writerId'">AND writerId like '%'||#{keyword}||'%' </when>
+				<when test="type == 'content'">AND content like '%'||#{keyword}||'%' </when>
+			</choose>
+		</if>
+
+	</select>
+
+
+
+	<select id="Search_getMtRoomList" resultType="MtRoomVO">
+
+		select *from
+		meetingroom
+		where mr_Name like '%'||#{mr_Name}||'%'
+		order by mrNo desc
+
+	</select>
+
+	<select id="getMtRoom" resultType="MtRoomVO">
+
+		select *
+		from meetingroom
+		where
+		mrNo = #{mrNo}
+
+	</select>
+
+	<insert id="insertMtRoom" keyProperty="mrNo">
+
+		<selectKey keyProperty="mrNo" resultType="int"
+			order="BEFORE">
+
+			SELECT COALESCE(MAX(mrNo),0) + 1 AS mrNo from meetingroom
+
+		</selectKey>
+
+		insert into
+		meetingroom(mrNo,mr_Name,start_Time,end_Time,capacity,location,building,roomNo,picture,first_Reg_ID)
+		VALUES(#{mrNo}, #{mr_Name} , #{start_Time}, #{end_Time}, #{capacity},
+		#{location}, #{building}, #{roomNo}, #{picture, jdbcType=VARCHAR},
+		#{first_Reg_ID, jdbcType=VARCHAR})
+
+	</insert>
+
+	<update id="updateMtRoom" parameterType="MtRoomVO">
+
+		update meetingroom
+		set
+		mr_Name = #{mr_Name}, start_Time =#{start_Time}, end_Time
+		=#{end_Time}
+		, capacity =#{capacity}, location= #{location}, building= #{building},
+		roomNo= #{roomNo}, picture= #{picture}
+
+		where mrNo= #{mrNo}
+
+	</update>
+
+	<delete id="deleteMtRoom" parameterType="int">
+
+		delete from meetingroom
+		where mrNo =#{mrNo}
+
+	</delete>
+
+	<select id="getMrReserveList" parameterType="MrResTimeVO"
+		resultType="MrReserveVO">
+
+		select *
+		from
+		mr_Reservation where mrNo= #{mrNo} and
+		reserve_Day= #{reserve_Day}
+
+	</select>
+
+	<select id="getMrReserve" resultType="MrReserveVO">
+
+		select *
+		from mr_Reservation
+		where reNo =#{reNo}
+
+	</select>
+
+	<insert id="insertMrReserve" keyProperty="reNo"
+		parameterType="MrReserveVO">
+
+		<selectKey keyProperty="reNo" resultType="int"
+			order="BEFORE">
+
+			select COALESCE(MAX(reNo),0)+ 1 AS reNo from mr_Reservation
+		</selectKey>
+
+		insert into mr_Reservation
+		(reNo,mrNo,bookerID,title,reserve_Day,RESERVE_START,RESERVE_END,ATTENDEES,CONTENTS,first_Reg_ID)
+		values (#{reNo}, #{mrNo}, #{bookerID}, #{title}, #{reserve_Day},
+		#{reserve_Start}, #{reserve_End}, #{attendees},
+		#{contents},
+		#{first_Reg_ID})
+
+	</insert>
+
+	<update id="updateMrReserve" parameterType="MrReserveVO">
+
+		update mr_Reservation
+		set reNo =#{reNo} , mrNo= #{mrNo}, bookerID= #{bookerID},
+		title=#{title},
+		RESERVE_DAY =#{reserve_Day}, RESERVE_START
+		=#{reserve_Start},
+		RESERVE_END =#{reserve_End} ,ATTENDEES
+		=#{attendees}, CONTENTS =#{contents},
+		FIRST_REG_ID =#{first_Reg_ID}
+		where reNo= #{reNo}
+	</update>
+
+	<delete id="deleteMrReserve" parameterType="int">
+		delete from
+		mr_Reservation
+		where reNo= #{reNo}
+	</delete>
+
+	<select id="resDupCeck" parameterType="MrReserveVO"
+		resultType="int">
+
+		select count(*) from mr_Reservation
+		where RESERVE_DAY =#{reserve_Day}
+		AND mrNo =#{mrNo}
+		AND (#{reserve_Start}>=reserve_Start and reserve_End>= #{reserve_Start}
+		or #{reserve_End} >= reserve_Start and reserve_End >= #{reserve_End} )
+	</select>
+
+	<select id="getMrReserveByTime" parameterType="MrReserveVO"
+		resultType="MrReserveVO">
+
+		select *from mr_Reservation
+		where mrNo= #{mrNo} and reserve_Day =#{reserve_Day}
+		AND TO_NUMBER(#{reserve_Start}) >=TO_NUMBER(reserve_Start) and
+		TO_NUMBER(reserve_End) >=TO_NUMBER(#{reserve_Start})
+
+	</select>
+
+	<select id="getTotalRow" parameterType="SearchVO"
+		resultType="int">
+		SELECT count(*) AS totalrow
+		FROM mr_Reservation
+
+
+	</select>
+</mapper>

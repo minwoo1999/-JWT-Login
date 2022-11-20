@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>회의실 예약 등록</title>
+
+<link href="/css/com.css" rel="stylesheet" type="text/css" />
+<link href="/css/button.css" rel="stylesheet" type="text/css" />
+<link href="/css/jqueryui.css" rel="stylesheet" type="text/css" />
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.9.2/i18n/jquery.ui.datepicker-ko.min.js"></script>
+<script type="text/javaScript" language="javascript">
+
+function initCalendar(){
+  $("#reserve_Day").datepicker(
+        {dateFormat:'yy-mm-dd'
+         , showOn: 'button'
+         , buttonImage : '/resources/images/cmm/icon/bu_icon_carlendar.gif'
+         , buttonImageOnly: true        
+         , showMonthAfterYear: true
+         , showOtherMonths: true
+         , selectOtherMonths: true
+         , changeMonth: true // 월선택 select box 표시 (기본은 false)
+         , changeYear: true  // 년선택 selectbox 표시 (기본은 false)
+         , showButtonPanel: true // 하단 today, done  버튼기능 추가 표시 (기본은 false)
+  });
+  $("#resveView").change(function(){
+	  $("reserve_Day").val($(this).val().replace(/-/gi,"/"));
+  })
+}
+
+function fncMrReserve() {
+
+
+ mtgPlaceResve.action = "insertReserve";
+
+ if(mtgPlaceResve.dupCeck.value =="true" ) {
+     if(confirm("에약하시겠습니까?")){
+     mtgPlaceResve.submit();
+     }
+     else{
+    return false;
+     }
+ }
+ else if(mtgPlaceResve.dupCeck.value == false) {alert("예약 중복확인 후 예약을 해주세요. ");}   
+ else { alert("회의실 예약 중복확인을 하신 후 회의실 예약을 해주세요.");}
+}
+// 회의실 중복여부 확인  ajax 
+function resDupCheck(){
+	
+	console.log("버튼 눌림");
+	var mrNo =   mtgPlaceResve.mrNo.value;
+	var beginTm =  mtgPlaceResve.reserve_Start.value;
+	var endTm   =  mtgPlaceResve.reserve_End.value;
+	var res_Day =  mtgPlaceResve.reserve_Day.value
+	
+	if((endTm-beginTm) < 0){
+	  alert("예약시작 시간이 예약종료 시간보다 빨라야 합니다.");
+	  return false;
+	}
+	
+	var sTempValue = "reserve_Day="+ res_Day  + "&reserve_Start="+beginTm + "&reserve_End="+endTm + "&mrNo=" + mrNo
+	
+	var access = $("#dupMsg");
+	
+	$.ajax({
+		
+	   url:"/resDupCheck?" + sTempValue,
+	   type: 'get',
+	   dataType: 'json',
+	   
+	   success:function(result){
+		   alert(result.dup);
+	    if (result.dup=="true"){
+	      access.html("<font color='green' size='2px;'><i class='fa fa-check'>&nbsp;:예약 가능한 시간입니다.</i></font>");
+	      $("#dupCeck").val("true");
+	    }
+	    else{
+	      access.html("<font color='red' size='2px;'><i class='fa fa-times'>&nbsp;:예약 시간이 중복되었습니다.</i></font>");
+	      $("#dupCeck").val("false");
+	    }
+	 }
+});
+}
+
+</script>
+</head>
+<form th:object="${mrReserveVO}" name="mtgPlaceResve" method="post" >
+<input type="hidden" name="cmd" value="insert" >
+<input type="hidden" name="dupCeck" id="dupCeck">
+<input type="hidden" name="mrNo" th:value ="${mtRoomVO.mrNo}">
+
+<div class="wTableFrm">
+<!-- 타이틀 -->
+<h2>회의실 에약신청</h2>
+
+<!-- 등록폼 -->
+<table class="wTable">
+<colgroup>
+<col style="width:16%" />
+<col style="" />
+<col style="width:16%" />
+<col style="" />
+</colgroup>
+<tr>
+<th>제목 <span class="pilsu">*</span></th>
+<td class="left" colspan="3">
+    <input name="title" type="text" maxlength="70" title="제목" required="required" />
+</td>
+</tr>
+<tr>
+<th>회의실명 <span class="pilsu">*</span></th><!-- 회의실명 -->
+<td class="left" colspan="3" th:text="${mtRoomVO.mr_Name}">
+    
+</td>
+</tr>
+<tr>
+<th>회의실 위치 <span class="pilsu">*</span></th><!-- 회의실 위치 -->
+<td class="left" colspan="3">
+   <input name="location" th:value="${mtRoomVO.location}" cssStyle="width:509px" required="required"/> <br>
+   <input name="building" th:value="${mtRoomVO.building}"  required="required"/> <br>
+   <input name="roomNo" th:value="${mtRoomVO.roomNo}"  required="required"/> <br>
+   
+   
+</td>
+</tr>
+<tr>
+<th>예약자 ID  <span class="pilsu">*</span></th><!-- 예약자 -->
+<td class="left">
+    <input name="first_Reg_ID" type="text" maxlength="20" th:value="${session.userId}"  /> 
+</td>
+
+<th>예약자 이름4 </th>
+<td class="left" th:text="${resName}"></td>
+</tr>
+
+<tr> <div>
+<th>예약시간  <span class="pilsu">*</span></th>
+<td class="left" colspan="3">
+    <input type="hidden" name="cal_url" id="cal_url" value="<c:url value='/sym/cal/EgovNormalCalPopup.do'/>" >
+<input name="reserve_Day" id="reserve_Day" type="text" size="10" th:value="${mrReserveVO.reserve_Day}" title="예약일자" maxlength="10" style="width:78px" />
+
+<select name="reserve_Start" title="예약시작시간">
+<option value="800" th:selected="${mrReserveVO.reserve_Start == '800'}">08:00</option>
+<option value="830" th:selected="${mrReserveVO.reserve_Start == '830'}">08:30</option>
+<option value="900" th:selected="${mrReserveVO.reserve_Start == '900'}">09:00</option>
+<option value="930" th:selected="${mrReserveVO.reserve_Start == '930'}">09:30</option>
+<option value="1000" th:selected="${mrReserveVO.reserve_Start == '1000'}">10:00</option>
+<option value="1030" th:selected="${mrReserveVO.reserve_Start == '1030'}">10:30</option>
+<option value="1100" th:selected="${mrReserveVO.reserve_Start == '1100'}">11:00</option>
+<option value="1130" th:selected="${mrReserveVO.reserve_Start == '1130'}">11:30</option>
+<option value="1200" th:selected="${mrReserveVO.reserve_Start == '1200'}">12:00</option>
+<option value="1230" th:selected="${mrReserveVO.reserve_Start == '1230'}">12:30</option>
+<option value="1300" th:selected="${mrReserveVO.reserve_Start == '1300'}">13:00</option>
+<option value="1330" th:selected="${mrReserveVO.reserve_Start == '1330'}">13:30</option>
+<option value="1400" th:selected="${mrReserveVO.reserve_Start == '1400'}">14:00</option>
+<option value="1430" th:selected="${mrReserveVO.reserve_Start == '1430'}">14:30</option>
+<option value="1500" th:selected="${mrReserveVO.reserve_Start == '1500'}">15:00</option>
+<option value="1530" th:selected="${mrReserveVO.reserve_Start == '1530'}">15:30</option>
+<option value="1600" th:selected="${mrReserveVO.reserve_Start == '1600'}">16:00</option>
+<option value="1630" th:selected="${mrReserveVO.reserve_Start == '1630'}">16:30</option>
+<option value="1700" th:selected="${mrReserveVO.reserve_Start == '1700'}">17:00</option>
+<option value="1730" th:selected="${mrReserveVO.reserve_Start == '1730'}">17:30</option>
+<option value="1800" th:selected="${mrReserveVO.reserve_Start == '1800'}">18:00</option>
+<option value="1830" th:selected="${mrReserveVO.reserve_Start == '1830'}">18:30</option>
+<option value="1900" th:selected="${mrReserveVO.reserve_Start == '1900'}">19:00</option>
+<option value="1930" th:selected="${mrReserveVO.reserve_Start == '1930'}">19:30</option>
+<option value="2000" th:selected="${mrReserveVO.reserve_Start == '2000'}">20:00</option>
+<option value="2030" th:selected="${mrReserveVO.reserve_Start == '2030'}">20:30</option>
+<option value="2100" th:selected="${mrReserveVO.reserve_Start == '2100'}">21:00</option>
+
+
+</select>
+~
+<select name="reserve_End" title="예약종료시간"><!-- 예약종료시간 -->
+<option value="800" th:selected="${mrReserveVO.reserve_Start == '800'}">08:00</option>
+<option value="830" th:selected="${mrReserveVO.reserve_Start == '830'}">08:30</option>
+<option value="900" th:selected="${mrReserveVO.reserve_Start == '900'}">09:00</option>
+<option value="930" th:selected="${mrReserveVO.reserve_Start == '930'}">09:30</option>
+<option value="1000" th:selected="${mrReserveVO.reserve_Start == '1000'}">10:00</option>
+<option value="1030" th:selected="${mrReserveVO.reserve_Start == '1030'}">10:30</option>
+<option value="1100" th:selected="${mrReserveVO.reserve_Start == '1100'}">11:00</option>
+<option value="1130" th:selected="${mrReserveVO.reserve_Start == '1130'}">11:30</option>
+<option value="1200" th:selected="${mrReserveVO.reserve_Start == '1200'}">12:00</option>
+<option value="1230" th:selected="${mrReserveVO.reserve_Start == '1230'}">12:30</option>
+<option value="1300" th:selected="${mrReserveVO.reserve_Start == '1300'}">13:00</option>
+<option value="1330" th:selected="${mrReserveVO.reserve_Start == '1330'}">13:30</option>
+<option value="1400" th:selected="${mrReserveVO.reserve_Start == '1400'}">14:00</option>
+<option value="1430" th:selected="${mrReserveVO.reserve_Start == '1430'}">14:30</option>
+<option value="1500" th:selected="${mrReserveVO.reserve_Start == '1500'}">15:00</option>
+<option value="1530" th:selected="${mrReserveVO.reserve_Start == '1530'}">15:30</option>
+<option value="1600" th:selected="${mrReserveVO.reserve_Start == '1600'}">16:00</option>
+<option value="1630" th:selected="${mrReserveVO.reserve_Start == '1630'}">16:30</option>
+<option value="1700" th:selected="${mrReserveVO.reserve_Start == '1700'}">17:00</option>
+<option value="1730" th:selected="${mrReserveVO.reserve_Start == '1730'}">17:30</option>
+<option value="1800" th:selected="${mrReserveVO.reserve_Start == '1800'}">18:00</option>
+<option value="1830" th:selected="${mrReserveVO.reserve_Start == '1830'}">18:30</option>
+<option value="1900" th:selected="${mrReserveVO.reserve_Start == '1900'}">19:00</option>
+<option value="1930" th:selected="${mrReserveVO.reserve_Start == '1930'}">19:30</option>
+<option value="2000" th:selected="${mrReserveVO.reserve_Start == '2000'}">20:00</option>
+<option value="2030" th:selected="${mrReserveVO.reserve_Start == '2030'}">20:30</option>
+<option value="2100" th:selected="${mrReserveVO.reserve_Start == '2100'}">21:00</option>
+</select>
+
+<input class="btn01" id="btn01" type="button" value="중복체크" th:onclick="resDupCheck(); return false;" title="중복체크"/> 
+<span id="dupMsg"></span></div>
+</td></tr>
+<tr>
+<th>참석인원</th><!-- 참석인원 -->
+<td class="left" colspan="3">
+    <input name="attendees" type="text"  maxlength="3" style="width:30px;" title="참석인원" required="required" /> 명
+</td></tr>
+<tr>
+<th>회의내용</th><!-- 회의내용 -->
+<td class="left" colspan="3">
+    <textarea name="contents" rows="4" cols="70" title="회의내용" required="required" ></textarea> 
+</td>
+</tr>
+<span th:text="${mtRoomVO.picture}"></span>
+<!--  첨부파일 테이블 레이아웃 설정 Start.. -->
+<span th:if="${mtRoomVO.picture !='' }" >
+<tr>
+<th height="23" class="required_text" scope="row">이미지 파일</th><!-- 이미지 파일목록 -->
+<td class="left" colspan="3">
+   <img th:src="@{|/images/${mtRoomVO.picture}|}" width="200" height="150" alt="">
+</td>
+</tr>
+</span>
+</table>
+<!-- 하단 버튼 -->
+<div class="btn">
+<input class="s_submit" type="submit" value='저장' onclick="fncMrReserve(); return false;" />
+<span class="btn_s"><a href="mtResList" >목록</a></span>
+</div>
+<div style="clear:both;"></div>
+</div>
+</form>
+</body>
+</html>
+
