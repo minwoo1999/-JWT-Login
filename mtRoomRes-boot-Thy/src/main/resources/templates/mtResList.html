@@ -1,0 +1,728 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+<title>회의실예약 관리 </title>
+<link href="/css/com.css" rel="stylesheet" type="text/css" />
+<link href="/css/button.css" rel="stylesheet" type="text/css" />
+<link href="/css/jqueryui.css" rel="stylesheet" type="text/css" />
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.9.2/i18n/jquery.ui.datepicker-ko.min.js"></script>
+
+<script type="text/javaScript" language="javascript" defer="defer">
+
+function initCalendar(){
+		$("#resveDeView").datepicker(
+		        {dateFormat:'yy-mm-dd'
+		         , showOn: 'both'
+		         , buttonImage: '/images/cmm/icon/bu_icon_carlendar.gif'
+		         , buttonImageOnly: true
+		         , showMonthAfterYear: true
+		         , showOtherMonths: true
+			     , selectOtherMonths: true
+		         , changeMonth: true // 월선택 select box 표시 (기본은 false)
+		         , changeYear: true  // 년선택 selectbox 표시 (기본은 false)
+		         , showButtonPanel: true // 하단 today, done  버튼기능 추가 표시 (기본은 false)
+		});		
+		$("#resveDeView").change(function() {
+			$("#reserve_Day").val($(this).val().replace(/-/gi,"/"));
+		});
+}
+</script>
+</head>
+
+<body onLoad="initCalendar();">
+
+<div class="board">
+	<h1> 회의실예약 관리 </h1>
+	<form name="listForm" action="mtResList" method="post"> 
+	<div class="search_box" title="회의일자">
+		<ul>
+			<li>
+				<label for="">회의일자 : </label>
+				<input id="reserve_Day" name="reserve_Day" type="hidden" th:value="${reserve_Day}"/>
+				<input id="resveDeView" name="resveDeView" type="text" th:value="${reserve_Day}" readonly="readonly" title="조회" 
+				        style="width:80px; margin-right:-8px" />
+				<input class="s_btn" type="submit" value='조회' title='조회' onclick="fncMtResveList('1')" />
+			</li>
+		</ul>
+	</div>
+	</form>
+	<p class="mb5">※회의일자 변경시 조회 버튼 클릭하셔야 예약 리스트가 조회됩니다.<br /><!-- 회의일자 변경시 조회 버튼 클릭하셔야 예약 리스트가 조회됩니다. -->
+	※회의실 예약은 회의실의 색이 없는 빈 시간을 클릭하시면 예약신청화면으로 이동합니다. (그래프 클릭시 상세화면 이동.)</p>
+	
+	<table class="table-line" style="style:border-spacing0"; summary="회의실 예약관리 목록" >
+	<caption class="blind">회의실 예약관리 목록</caption>
+	 <thead>
+		<colgroup>
+			<col style="width:200px" />
+			<col style="" />
+			<col style="" />
+			<col style="" />
+			<col style="" />
+			<col style="" />
+			<col style="" />
+			<col style="" />
+			<col style="" />
+			<col style="" />
+			<col style="" />
+			<col style="" />
+			<col style="" />
+			<col style="" />
+		</colgroup>
+	  <tr>
+	    <th class="title" scope="col">회의실명</th>
+	    <th class="title" colspan="2" scope="col">08</th>
+	    <th class="title" colspan="2" scope="col">09</th>
+	    <th class="title" colspan="2" scope="col">10</th>
+	    <th class="title" colspan="2" scope="col">11</th>
+	    <th class="title" colspan="2" scope="col">12</th>
+	    <th class="title" colspan="2" scope="col">13</th>
+	    <th class="title" colspan="2" scope="col">14</th>
+	    <th class="title" colspan="2" scope="col">15</th>
+	    <th class="title" colspan="2" scope="col">16</th>
+	    <th class="title" colspan="2" scope="col">17</th>
+	    <th class="title" colspan="2" scope="col">18</th>
+	    <th class="title" colspan="2" scope="col">19</th>
+	    <th class="title" colspan="2" scope="col">20</th>
+	  </tr>
+	 </thead>    
+	
+	 <tbody>
+	  <tr th:each="mtResTable : ${mrResTimeList}" >
+
+	    <td  class="al"  th:text="${mtResTable.mr_Name}"/></td> 
+
+	    <td  th:if="${mtResTable.resveTemp800 != '0' }" bgcolor="#431508"  >
+	        <form name="item" method="post" th:action="updateResView">          
+		    <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo}">
+		    <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		    <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		    <input type="hidden" name="reserve_Start" value="800">
+
+	        <span  class="link"  style="background:pink;">
+		    <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+            </form>
+	    </td>
+	    <td  th:if="${mtResTable.resveTemp800 == '0' }"  bgcolor="#FFFFFF"  >
+	        <form name="item" method="post" th:action="mtResRegist">
+		     <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo}">
+		     <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		     <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		     <input type="hidden" name="reserve_Start" value="800">
+
+             <span  class="link"  style="background:#ffffff;">
+	         <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+	        </form>
+	   </td>
+	   
+	   <td  th:if="${mtResTable.resveTemp830 != '0' }" bgcolor="#431508"  >
+	        <form name="item" method="post" th:action="updateResView">          
+		    <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo}">
+		    <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		    <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		    <input type="hidden" name="reserve_Start" value="830">
+
+	        <span  class="link"  style="background:pink;">
+		    <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+            </form>
+	    </td>
+	    <td  th:if="${mtResTable.resveTemp830 == '0' }"  bgcolor="#FFFFFF"  >
+	        <form name="item" method="post" th:action="mtResRegist">
+		     <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo}">
+		     <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		     <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		     <input type="hidden" name="reserve_Start" value="830">
+
+             <span  class="link"  style="background:#ffffff;">
+	         <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+	        </form>
+	   </td>
+	   
+	   	   
+	   <td  th:if="${mtResTable.resveTemp900 != '0' }" bgcolor="#431508"  >
+	        <form name="item" method="post" th:action="updateResView">          
+		    <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo}">
+		    <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		    <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		    <input type="hidden" name="reserve_Start" value="900">
+
+	            <span  class="link"  style="background:pink;">
+		    <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+                </form>
+	    </td>
+	    <td  th:if="${mtResTable.resveTemp900 == '0' }"  bgcolor="#FFFFFF"  >
+	        <form name="item" method="post" th:action="mtResRegist">
+		     <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo}">
+		     <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		     <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		     <input type="hidden" name="reserve_Start" value="900">
+
+                     <span  class="link"  style="background:#ffffff;">
+	             <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+	        </form>
+	   </td>
+	   
+	   <td  th:if="${mtResTable.resveTemp930 != '0' }" bgcolor="#431508"  >
+	        <form name="item" method="post" th:action="updateResView">          
+		    <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo}">
+		    <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		    <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		    <input type="hidden" name="reserve_Start" value="930">
+
+	        <span  class="link"  style="background:pink;">
+		    <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+                </form>
+	    </td>
+	    <td  th:if="${mtResTable.resveTemp930 == '0' }"  bgcolor="#FFFFFF"  >
+	        <form name="item" method="post" th:action="mtResRegist">
+		     <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo}">
+		     <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		     <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		     <input type="hidden" name="reserve_Start" value="930">
+
+             <span  class="link"  style="background:#ffffff;">
+	         <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+	        </form>
+	   </td>
+	   
+	   <td  th:if="${mtResTable.resveTemp1000 != '0' }" bgcolor="#431508"  >
+	        <form name="item" method="post" th:action="updateResView">          
+		    <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo}">
+		    <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		    <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		    <input type="hidden" name="reserve_Start" value="1000">
+
+	        <span  class="link"  style="background:pink;">
+		    <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+                </form>
+	    </td>
+	    <td  th:if="${mtResTable.resveTemp1000 == '0' }"  bgcolor="#FFFFFF"  >
+	        <form name="item" method="post" th:action="mtResRegist">
+		     <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo} ">
+		     <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		     <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		     <input type="hidden" name="reserve_Start" value="1000">
+
+             <span  class="link"  style="background:#ffffff;">
+	         <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+	        </form>
+	   </td>
+	   
+	   	   <td  th:if="${mtResTable.resveTemp1030 != '0' }" bgcolor="#431508"  >
+	        <form name="item" method="post" th:action="updateResView">          
+		    <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo}">
+		    <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		    <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		    <input type="hidden" name="reserve_Start" value="1030">
+
+	        <span  class="link"  style="background:pink;">
+		    <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+                </form>
+	    </td>
+	    <td  th:if="${mtResTable.resveTemp1030 == '0' }"  bgcolor="#FFFFFF"  >
+	        <form name="item" method="post" th:action="mtResRegist">
+		     <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo} ">
+		     <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		     <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		     <input type="hidden" name="reserve_Start" value="1030">
+
+             <span  class="link"  style="background:#ffffff;">
+	         <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+	        </form>
+	   </td>
+	   
+	   	   <td  th:if="${mtResTable.resveTemp1100 != '0' }" bgcolor="#431508"  >
+	        <form name="item" method="post" th:action="updateResView">          
+		    <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo}">
+		    <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		    <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		    <input type="hidden" name="reserve_Start" value="1100">
+
+	        <span  class="link"  style="background:pink;">
+		    <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+                </form>
+	    </td>
+	    <td  th:if="${mtResTable.resveTemp1100 == '0' }"  bgcolor="#FFFFFF"  >
+	        <form name="item" method="post" th:action="mtResRegist">
+		     <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo} ">
+		     <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		     <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		     <input type="hidden" name="reserve_Start" value="1100">
+
+             <span  class="link"  style="background:#ffffff;">
+	         <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+	        </form>
+	   </td>
+	   
+	   
+	    <td  th:if="${mtResTable.resveTemp1130 != '0' }" bgcolor="#431508"  >
+	        <form name="item" method="post" th:action="updateResView">          
+		    <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo}">
+		    <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		    <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		    <input type="hidden" name="reserve_Start" value="1130">
+
+	        <span  class="link"  style="background:pink;">
+		    <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+                </form>
+	    </td>
+	    <td  th:if="${mtResTable.resveTemp1130 == '0' }"  bgcolor="#FFFFFF"  >
+	        <form name="item" method="post" th:action="mtResRegist">
+		     <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo} ">
+		     <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		     <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		     <input type="hidden" name="reserve_Start" value="1130">
+
+             <span  class="link"  style="background:#ffffff;">
+	         <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+	        </form>
+	    </td>
+	   
+	    <td  th:if="${mtResTable.resveTemp1200 != '0' }" bgcolor="#431508"  >
+	        <form name="item" method="post" th:action="updateResView">          
+		    <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo}">
+		    <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		    <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		    <input type="hidden" name="reserve_Start" value="1200">
+
+	        <span  class="link"  style="background:pink;">
+		    <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+                </form>
+	    </td>
+	    <td  th:if="${mtResTable.resveTemp1200 == '0' }"  bgcolor="#FFFFFF"  >
+	        <form name="item" method="post" th:action="mtResRegist">
+		     <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo} ">
+		     <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		     <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		     <input type="hidden" name="reserve_Start" value="1200">
+
+             <span  class="link"  style="background:#ffffff;">
+	         <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+	        </form>
+	    </td>
+	   
+	   
+	   	    <td  th:if="${mtResTable.resveTemp1230 != '0' }" bgcolor="#431508"  >
+	        <form name="item" method="post" th:action="updateResView">          
+		    <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo}">
+		    <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		    <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		    <input type="hidden" name="reserve_Start" value="1230">
+
+	        <span  class="link"  style="background:pink;">
+		    <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+                </form>
+	    </td>
+	    <td  th:if="${mtResTable.resveTemp1230 == '0' }"  bgcolor="#FFFFFF"  >
+	        <form name="item" method="post" th:action="mtResRegist">
+		     <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo} ">
+		     <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		     <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		     <input type="hidden" name="reserve_Start" value="1230">
+
+             <span  class="link"  style="background:#ffffff;">
+	         <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+	        </form>
+	    </td>
+	   
+	   
+	   	    <td  th:if="${mtResTable.resveTemp1300 != '0' }" bgcolor="#431508"  >
+	        <form name="item" method="post" th:action="updateResView">          
+		    <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo}">
+		    <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		    <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		    <input type="hidden" name="reserve_Start" value="1300">
+
+	        <span  class="link"  style="background:pink;">
+		    <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+                </form>
+	    </td>
+	    <td  th:if="${mtResTable.resveTemp1300 == '0' }"  bgcolor="#FFFFFF"  >
+	        <form name="item" method="post" th:action="mtResRegist">
+		     <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo} ">
+		     <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		     <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		     <input type="hidden" name="reserve_Start" value="1300">
+
+             <span  class="link"  style="background:#ffffff;">
+	         <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+	        </form>
+	    </td>
+	   
+	   
+	   	    <td  th:if="${mtResTable.resveTemp1330 != '0' }" bgcolor="#431508"  >
+	        <form name="item" method="post" th:action="updateResView">          
+		    <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo}">
+		    <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		    <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		    <input type="hidden" name="reserve_Start" value="1230">
+
+	        <span  class="link"  style="background:pink;">
+		    <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+                </form>
+	    </td>
+	    <td  th:if="${mtResTable.resveTemp1330 == '0' }"  bgcolor="#FFFFFF"  >
+	        <form name="item" method="post" th:action="mtResRegist">
+		     <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo} ">
+		     <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		     <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		     <input type="hidden" name="reserve_Start" value="1330">
+
+             <span  class="link"  style="background:#ffffff;">
+	         <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+	        </form>
+	    </td>
+	   
+	   <td  th:if="${mtResTable.resveTemp1400 != '0' }" bgcolor="#431508"  >
+	        <form name="item" method="post" th:action="updateResView">          
+		    <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo}">
+		    <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		    <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		    <input type="hidden" name="reserve_Start" value="1400">
+
+	        <span  class="link"  style="background:pink;">
+		    <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+                </form>
+	    </td>
+	    <td  th:if="${mtResTable.resveTemp1400 == '0' }"  bgcolor="#FFFFFF"  >
+	        <form name="item" method="post" th:action="mtResRegist">
+		     <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo} ">
+		     <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		     <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		     <input type="hidden" name="reserve_Start" value="1400">
+
+             <span  class="link"  style="background:#ffffff;">
+	         <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+	        </form>
+	    </td>
+	   
+	   
+	   	<td  th:if="${mtResTable.resveTemp1430 != '0' }" bgcolor="#431508"  >
+	        <form name="item" method="post" th:action="updateResView">          
+		    <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo}">
+		    <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		    <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		    <input type="hidden" name="reserve_Start" value="1430">
+
+	        <span  class="link"  style="background:pink;">
+		    <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+                </form>
+	    </td>
+	    <td  th:if="${mtResTable.resveTemp1430 == '0' }"  bgcolor="#FFFFFF"  >
+	        <form name="item" method="post" th:action="mtResRegist">
+		     <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo} ">
+		     <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		     <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		     <input type="hidden" name="reserve_Start" value="1430">
+
+             <span  class="link"  style="background:#ffffff;">
+	         <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+	        </form>
+	    </td>
+	   
+	   	<td  th:if="${mtResTable.resveTemp1500 != '0' }" bgcolor="#431508"  >
+	        <form name="item" method="post" th:action="updateResView">          
+		    <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo}">
+		    <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		    <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		    <input type="hidden" name="reserve_Start" value="1500">
+
+	        <span  class="link"  style="background:pink;">
+		    <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+                </form>
+	    </td>
+	    <td  th:if="${mtResTable.resveTemp1500 == '0' }"  bgcolor="#FFFFFF"  >
+	        <form name="item" method="post" th:action="mtResRegist">
+		     <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo} ">
+		     <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		     <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		     <input type="hidden" name="reserve_Start" value="1500">
+
+             <span  class="link"  style="background:#ffffff;">
+	         <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+	        </form>
+	    </td>
+	   
+	   
+	   	<td  th:if="${mtResTable.resveTemp1530 != '0' }" bgcolor="#431508"  >
+	        <form name="item" method="post" th:action="updateResView">          
+		    <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo}">
+		    <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		    <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		    <input type="hidden" name="reserve_Start" value="1530">
+
+	        <span  class="link"  style="background:pink;">
+		    <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+                </form>
+	    </td>
+	    <td  th:if="${mtResTable.resveTemp1530 == '0' }"  bgcolor="#FFFFFF"  >
+	        <form name="item" method="post" th:action="mtResRegist">
+		     <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo} ">
+		     <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		     <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		     <input type="hidden" name="reserve_Start" value="1430">
+
+             <span  class="link"  style="background:#ffffff;">
+	         <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+	        </form>
+	    </td>
+	   
+	   
+	   	   <td  th:if="${mtResTable.resveTemp1600 != '0' }" bgcolor="#431508"  >
+	        <form name="item" method="post" th:action="updateResView">          
+		    <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo}">
+		    <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		    <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		    <input type="hidden" name="reserve_Start" value="1600">
+
+	        <span  class="link"  style="background:pink;">
+		    <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+                </form>
+	    </td>
+	    <td  th:if="${mtResTable.resveTemp1600 == '0' }"  bgcolor="#FFFFFF"  >
+	        <form name="item" method="post" th:action="mtResRegist">
+		     <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo} ">
+		     <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		     <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		     <input type="hidden" name="reserve_Start" value="1600">
+
+             <span  class="link"  style="background:#ffffff;">
+	         <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+	        </form>
+	    </td>
+	   
+	   
+	   	<td  th:if="${mtResTable.resveTemp1630 != '0' }" bgcolor="#431508"  >
+	        <form name="item" method="post" th:action="updateResView">          
+		    <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo}">
+		    <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		    <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		    <input type="hidden" name="reserve_Start" value="1630">
+
+	        <span  class="link"  style="background:pink;">
+		    <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+                </form>
+	    </td>
+	    <td  th:if="${mtResTable.resveTemp1630 == '0' }"  bgcolor="#FFFFFF"  >
+	        <form name="item" method="post" th:action="mtResRegist">
+		     <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo} ">
+		     <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		     <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		     <input type="hidden" name="reserve_Start" value="1630">
+
+             <span  class="link"  style="background:#ffffff;">
+	         <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+	        </form>
+	    </td>
+	   
+	   
+	   
+	   	   <td  th:if="${mtResTable.resveTemp1700 != '0' }" bgcolor="#431508"  >
+	        <form name="item" method="post" th:action="updateResView">          
+		    <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo}">
+		    <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		    <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		    <input type="hidden" name="reserve_Start" value="1700">
+
+	        <span  class="link"  style="background:pink;">
+		    <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+                </form>
+	    </td>
+	    <td  th:if="${mtResTable.resveTemp1700 == '0' }"  bgcolor="#FFFFFF"  >
+	        <form name="item" method="post" th:action="mtResRegist">
+		     <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo} ">
+		     <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		     <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		     <input type="hidden" name="reserve_Start" value="1700">
+
+             <span  class="link"  style="background:#ffffff;">
+	         <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+	        </form>
+	    </td>
+	   
+	   
+	   	<td  th:if="${mtResTable.resveTemp1730 != '0' }" bgcolor="#431508"  >
+	        <form name="item" method="post" th:action="updateResView">          
+		    <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo}">
+		    <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		    <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		    <input type="hidden" name="reserve_Start" value="1730">
+
+	        <span  class="link"  style="background:pink;">
+		    <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+                </form>
+	    </td>
+	    <td  th:if="${mtResTable.resveTemp1730 == '0' }"  bgcolor="#FFFFFF"  >
+	        <form name="item" method="post" th:action="mtResRegist">
+		     <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo} ">
+		     <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		     <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		     <input type="hidden" name="reserve_Start" value="1730">
+
+             <span  class="link"  style="background:#ffffff;">
+	         <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+	        </form>
+	    </td>
+	   
+	   
+	   
+	   	   <td  th:if="${mtResTable.resveTemp1800 != '0' }" bgcolor="#431508"  >
+	        <form name="item" method="post" th:action="updateResView">          
+		    <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo}">
+		    <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		    <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		    <input type="hidden" name="reserve_Start" value="1800">
+
+	        <span  class="link"  style="background:pink;">
+		    <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+                </form>
+	    </td>
+	    <td  th:if="${mtResTable.resveTemp1800 == '0' }"  bgcolor="#FFFFFF"  >
+	        <form name="item" method="post" th:action="mtResRegist">
+		     <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo} ">
+		     <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		     <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		     <input type="hidden" name="reserve_Start" value="1800">
+
+             <span  class="link"  style="background:#ffffff;">
+	         <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+	        </form>
+	    </td>
+	   
+	   
+	   	<td  th:if="${mtResTable.resveTemp1830 != '0' }" bgcolor="#431508"  >
+	        <form name="item" method="post" th:action="updateResView">          
+		    <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo}">
+		    <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		    <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		    <input type="hidden" name="reserve_Start" value="1830">
+
+	        <span  class="link"  style="background:pink;">
+		    <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+                </form>
+	    </td>
+	    <td  th:if="${mtResTable.resveTemp1830 == '0' }"  bgcolor="#FFFFFF"  >
+	        <form name="item" method="post" th:action="mtResRegist">
+		     <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo} ">
+		     <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		     <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		     <input type="hidden" name="reserve_Start" value="1830">
+
+             <span  class="link"  style="background:#ffffff;">
+	         <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+	        </form>
+	    </td>
+	   
+	   
+	   
+	   
+	   	   <td  th:if="${mtResTable.resveTemp1900 != '0' }" bgcolor="#431508"  >
+	        <form name="item" method="post" th:action="updateResView">          
+		    <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo}">
+		    <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		    <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		    <input type="hidden" name="reserve_Start" value="1900">
+
+	        <span  class="link"  style="background:pink;">
+		    <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+                </form>
+	    </td>
+	    <td  th:if="${mtResTable.resveTemp1900 == '0' }"  bgcolor="#FFFFFF"  >
+	        <form name="item" method="post" th:action="mtResRegist">
+		     <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo} ">
+		     <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		     <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		     <input type="hidden" name="reserve_Start" value="1900">
+
+             <span  class="link"  style="background:#ffffff;">
+	         <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+	        </form>
+	    </td>
+	   
+	   
+	   	<td  th:if="${mtResTable.resveTemp1930 != '0' }" bgcolor="#431508"  >
+	        <form name="item" method="post" th:action="updateResView">          
+		    <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo}">
+		    <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		    <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		    <input type="hidden" name="reserve_Start" value="1930">
+
+	        <span  class="link"  style="background:pink;">
+		    <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+                </form>
+	    </td>
+	    <td  th:if="${mtResTable.resveTemp1930 == '0' }"  bgcolor="#FFFFFF"  >
+	        <form name="item" method="post" th:action="mtResRegist">
+		     <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo} ">
+		     <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		     <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		     <input type="hidden" name="reserve_Start" value="1930">
+
+             <span  class="link"  style="background:#ffffff;">
+	         <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+	        </form>
+	    </td>
+	   
+	   
+	   	   <td  th:if="${mtResTable.resveTemp2000 != '0' }" bgcolor="#431508"  >
+	        <form name="item" method="post" th:action="updateResView">          
+		    <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo}">
+		    <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		    <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		    <input type="hidden" name="reserve_Start" value="2000">
+
+	        <span  class="link"  style="background:pink;">
+		    <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+                </form>
+	    </td>
+	    <td  th:if="${mtResTable.resveTemp2000 == '0' }"  bgcolor="#FFFFFF"  >
+	        <form name="item" method="post" th:action="mtResRegist">
+		     <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo} ">
+		     <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		     <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		     <input type="hidden" name="reserve_Start" value="2000">
+
+             <span  class="link"  style="background:#ffffff;">
+	         <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+	        </form>
+	    </td>
+	   
+	   
+	   	<td  th:if="${mtResTable.resveTemp2030 != '0' }" bgcolor="#431508"  >
+	        <form name="item" method="post" th:action="updateResView">          
+		    <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo}">
+		    <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		    <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		    <input type="hidden" name="reserve_Start" value="2030">
+
+	        <span  class="link"  style="background:pink;">
+		    <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+                </form>
+	    </td>
+	    <td  th:if="${mtResTable.resveTemp2030 == '0' }"  bgcolor="#FFFFFF"  >
+	        <form name="item" method="post" th:action="mtResRegist">
+		     <input type="hidden" name="mrNo" th:value="${mtResTable.mrNo} ">
+		     <input type="hidden" name="mr_Name" th:value="${mtResTable.mr_Name}">
+		     <input type="hidden" name="reserve_Day" th:value="${mtResTable.reserve_Day}">
+		     <input type="hidden" name="reserve_Start" value="2030">
+
+             <span  class="link"  style="background:#ffffff;">
+	         <input type="submit" value=" " style="width:100%; height:100%;" ></span>
+	        </form>
+	    </td>
+	  </tr>  
+	  
+	 </tbody>  
+	</table>
+</div>
+
+</body>
+
+</html>

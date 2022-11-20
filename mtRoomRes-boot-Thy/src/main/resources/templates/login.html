@@ -1,0 +1,75 @@
+
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link href="/css/style.css" rel="stylesheet" type="text/css" />
+
+<style>
+.login-page {
+	width: 500px;
+	padding: 10% 0 0;
+	margin: auto;
+	text-align: center;
+	background: #ffffff;
+	height: 800px;
+	border-radius: 50px/30px;
+}
+</style>
+</head>
+<body>
+	<script type="text/javascript">
+		function loginAction() {
+			login.action = "login";
+		}
+	</script>
+
+
+
+	<div class="login-page">
+		<div class="form">
+			<form th:object="${user}" class="login-form" method="post"
+				name="login">
+
+
+
+				<p align="left">
+				<div th:if="${#fields.hasErrors()}">
+					<span class="fieldError"> 사용자의 정보가 일치하지않습니다. </span>
+				</div>
+
+				<p align="left">
+					<p align="left"><div class="field-error" th:errors="*{id}">아이디 오류</div>
+				</p>
+				<input name='id' type="text" placeholder="username" />
+
+				<p align="left"><div class="field-error" th:errors="*{pass}">비밀번호 오류</div>
+				</p>
+				
+				<input name='pass' type="password" placeholder="password" />
+
+				
+
+
+				<button type="submit" th:onclick="loginAction();">login</button>
+
+				<p class="message">
+				
+				<ul id="ullog">
+					<li id="lilogb"><a href="/join">회원가입</a></li>|
+					<li id="lilog"><a href="/findId">아이디/</a> <a href="/findPass"
+						class="pwd">비밀번호 찾기</a></li>
+				</ul>
+				</p>
+
+			</form>
+
+		</div>
+	</div>
+
+
+</body>
+
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>회의실 상세 </title>
+
+<link href="/css/com.css" rel="stylesheet" type="text/css" />
+<link href="/css/button.css" rel="stylesheet" type="text/css" />
+<script type="text/javaScript" >
+
+/*설명 : 회의실 삭제 */
+function fncDeleteMtRoom(mrNo) {
+    if(confirm("삭제 하시겠습니까?")){
+        var loc = '/deleteMtRoom?searchCondition=1&mrNo=' + mrNo;
+        location.href =  loc ;
+    }
+}
+
+</script>
+</head> 
+<body>
+<div id="border" style="width:730px">
+<table border="0">
+<tr>
+<td width="700">
+
+<div class="wTableFrm">
+
+<h2>회의실 상세</h2>
+<table class="wTable mb10">
+<colgroup>
+<col style="width:25%" />
+<col style="width:34%" />
+<col style="width:16%" />
+<col style="" />
+</colgroup>
+<tr>
+<th>회의실 명<span class="pilsu">*</span></th>
+<td class="left" colspan="3" th:text="${mtRoomVO.mr_Name}">
+</td>
+</tr>
+<tr>
+<th>수용인원<span class="pilsu">*</span></th>
+<td class="left" th:text="${mtRoomVO.capacity}"> </td>
+<th>개방시간 <span class="pilsu">*</span></th>
+<td class="left"><span th:text="${mtRoomVO.start_Time}"></span> ~ <span th:text="${mtRoomVO.end_Time}">
+</td>
+</tr>
+<tr>
+<th>위치<span class="pilsu">*</span></th>
+<td class="left" colspan="3">
+    <span th:text="${mtRoomVO.location}"></span> <span th:text="${mtRoomVO.building}"></span> <span th:text="${mtRoomVO.roomNo}"></span>
+</td>
+</tr>
+<!--  첨부파일 테이블 레이아웃 설정 Start.. -->
+<span th:if="${mtRoomVO.picture !='' }">
+<tr>
+<th height="23" class="required_text" scope="row">이미지 파일</th><!-- 이미지 파일목록 -->
+<td class="left" colspan="3">
+   <img th:src="@{|/image/${mtRoomVO.picture}|}" width="200" height="150" alt="첨부이미지">
+</td>
+</tr>
+</span>
+
+<!--  첨부파일 테이블 레이아웃 End. /cmm/fms/selectFileInfs.do -->
+</table>
+
+<!-- 하단 버튼 -->
+<div class="btn">
+<span class="btn_s"><a th:href="@{|/updateMtRoom?searchCondition=1&mrNo=${mtRoomVO.mrNo}|}">수정</a></span>
+<span class="btn_s"><a th:href="@{#}" th:onclick="|fncDeleteMtRoom('${mtRoomVO.mrNo}'); return false;|">삭제</a></span>
+<span class="btn_s"><a href="/mtRoomList?searchCondition=1" >목록</a></span>
+
+</div>
+<div style="clear:both;"></div>
+</div>
+</td></tr></table>            
+
+</div>
+</body>
+</html>

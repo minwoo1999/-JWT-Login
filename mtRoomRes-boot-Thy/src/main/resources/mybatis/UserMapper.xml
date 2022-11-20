@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jang.mtg.mapper.UserMapper">
+
+
+
+
+	<select id="getUser" parameterType="String" resultType="User">
+		SELECT *
+		FROM member_tbl
+		WHERE id = #{id}
+	</select>
+
+	<insert id="insertUser" keyProperty="no">
+		<selectKey keyProperty="no" resultType="int" order="BEFORE">
+			SELECT
+			COALESCE(MAX(no), 0) + 1 AS no
+			FROM member_tbl
+		</selectKey>
+
+		INSERT INTO member_tbl (no, id, pass, name, zip, addr1, addr2, phone,
+		email, birthday)
+		VALUES (#{no}, #{id}, #{pass}, #{name}, #{zip},
+		#{addr1}, #{addr2},
+		#{phone}, #{email}, #{birthday} )
+	</insert>
+
+	<update id="updateUser" parameterType="User">
+		UPDATE member_tbl
+		SET
+		pass=#{pass},zip=#{zip},addr1=#{addr1},addr2=#{addr2},phone=#{phone},email=#{email},birthday=#{birthday}
+		WHERE id = #{id}
+	</update>
+
+	<select id="findId" parameterType="String" resultType="User">
+		SELECT *
+		FROM member_tbl
+		WHERE name = #{name} and email = #{email}
+	</select>
+
+	<select id="findPass" parameterType="String" resultType="User">
+		SELECT *
+		FROM member_tbl
+		WHERE id = #{id} and email = #{email}
+	</select>
+
+	<update id="updatePass" parameterType="User">
+		UPDATE member_tbl
+		SET
+		pass=#{pass}
+		WHERE id = #{id}
+	</update>
+
+
+
+
+
+
+</mapper>
