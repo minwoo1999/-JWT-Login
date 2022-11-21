@@ -7,3 +7,8 @@
 
 
 https://minwoo-it-factory.tistory.com/72
+
+
+### POSTMAN을사용해서 토큰생성 후 Header에 Authorization에 해당하는 토큰을 입력.
+
+* 2일차:JWT토큰을 생성하고 토큰검증 및 예외처리까지 구현완료
