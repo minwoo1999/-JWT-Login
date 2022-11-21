@@ -17,12 +17,12 @@ public class WebMvcConfig implements WebMvcConfigurer   {
 	}
 	
 	
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
+//	@Override
+	//public void addInterceptors(InterceptorRegistry registry) {
 		
-		registry.addInterceptor(new LoggerInterceptor())
-		.addPathPatterns("/*")
-		.excludePathPatterns("/join","/login","/token");
-	}
+	//	registry.addInterceptor(new LoggerInterceptor())
+	//	.addPathPatterns("/*")
+	//	.excludePathPatterns("/join","/login","/token");
+//	}
 
 }
