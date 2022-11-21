@@ -12,16 +12,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Header;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.time.Duration;
+import java.util.Base64;
+import java.util.Date;
 
 import com.jang.mtg.model.User;
 import com.jang.mtg.service.SecurityService;
 
+import io.jsonwebtoken.Claims;
 
 
-@Controller
+
+@RestController
 public class HomeController {
 	
 	
@@ -47,28 +61,40 @@ public class HomeController {
 		return "home";
 	}
 	
-	//≈‰≈´ πﬂ«‡
-	@GetMapping("/token")
-	public String generateToken(@RequestParam String subject,Model model){
+	//ÌÜ†ÌÅ∞ ÏÉùÏÑ±
+	@GetMapping("token")
+	public Map<String,Object> generateToken(@RequestParam String subject){
 		System.out.println(subject);
-		String token=securityService.createToken(subject, 1000*60*60);
+		String token=securityService.createToken(subject);
+		System.out.println(token);
+		Claims claims = securityService.parseJwtToken("Bearer "+ token); // ÌÜ†ÌÅ∞ Í≤ÄÏ¶ù
+		
+		
 		Map<String,Object> map =new HashMap<>();
 		map.put("userid", subject);
 		map.put("token", token);
-		model.addAttribute("user", new User());
+		map.put("expire",  claims.getExpiration().toString());
+		map.put("IssuedAt", claims.getIssuedAt().toString());
 		System.out.println(map);
-		return "login";
+		return map;
 		
 	}
-	//token ø‰√ª(Ωƒ∫∞)
+	//token Í≤ÄÏ¶ù
 	@GetMapping("security/get/subject")
-	public String getSubject(@RequestParam String token,Model model) {
-		String subject =securityService.getSubject(token);
-		System.out.println(subject);
-		model.addAttribute("user", new User());
-		return "login";
+	public Map<String,Object> getSubject(@RequestHeader(value="Authorization")String token,Model model) {
+		Claims subject =securityService.parseJwtToken(token);
+		
+		 Map<String,Object> map=new HashMap<>();
+		 map.put("code", 400);
+		 map.put("msg", "TokenSuccess");
+		 
+		 return map;
 	
 	}
+	
+	
+	
+	
 	
 	
 }
