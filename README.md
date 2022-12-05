@@ -28,8 +28,7 @@ https://minwoo-it-factory.tistory.com/72
 * Controller에서 Token을 검증하고 Payload에 담겨있던 사용자권한 데이터를 출력해준다.
 
 ### Controller에서 Hedaer Authnication값을 가져오는방법
-''''
-
+'''
 @RequestMapping(value = "/mypage", method = RequestMethod.GET)
     @CrossOrigin(origins = "http://localhost:3000")
     public User getAuthInfo(HttpServletRequest req) {
@@ -42,6 +41,6 @@ https://minwoo-it-factory.tistory.com/72
 
         return user; ## 사용자정보불러오기
     }
-''''
+'''
 
 
