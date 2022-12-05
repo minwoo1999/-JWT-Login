@@ -15,6 +15,8 @@ https://minwoo-it-factory.tistory.com/72
 
 ### React와 Spring boot 연동하여 로그인 성공시 token 발행 및 API 검증
 
+* 3일차
+
 - login Success: react 에서 sessionStorage.setItem("tokenId", jwttoken); jwt토큰을 세션스토리지에 저장
 
 - API검증시:
@@ -22,4 +24,6 @@ https://minwoo-it-factory.tistory.com/72
   headers: {
             Authorization: `${sessionStorage.getItem("tokenId")}`
         }
+
+-Controller에서 Token을 검증하고 Payload에 담겨있던 사용자권한 데이터를 출력해준다.
 
