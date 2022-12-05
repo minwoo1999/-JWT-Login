@@ -27,5 +27,20 @@ https://minwoo-it-factory.tistory.com/72
 
 * Controller에서 Token을 검증하고 Payload에 담겨있던 사용자권한 데이터를 출력해준다.
 
+### Controller에서 Hedaer Authnication값을 가져오는방법
+
+@RequestMapping(value = "/mypage", method = RequestMethod.GET)
+    @CrossOrigin(origins = "http://localhost:3000")
+    public User getAuthInfo(HttpServletRequest req) {
+        String authorization = req.getHeader("Authorization"); ##authorization 값 가져오기
+        String email=securityService.getSubject(authorization); ## authorization 값으로 토큰검증 후 사용자권한데이터(이메일)
+
+
+
+        User user=loginService.getUser(email); ## 해당하는 이메일로 사용자정보가져오기
+
+        return user; ## 사용자정보불러오기
+    }
+
 
 
