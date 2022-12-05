@@ -12,3 +12,14 @@ https://minwoo-it-factory.tistory.com/72
 ### POSTMAN을사용해서 토큰생성 후 Header에 Authorization에 해당하는 토큰을 입력.
 
 * 2일차:JWT토큰을 생성하고 토큰검증 및 예외처리까지 구현완료
+
+### React와 Spring boot 연동하여 로그인 성공시 token 발행 및 API 검증
+
+- login Success: react 에서 sessionStorage.setItem("tokenId", jwttoken); jwt토큰을 세션스토리지에 저장
+
+- API검증시:
+
+  headers: {
+            Authorization: `${sessionStorage.getItem("tokenId")}`
+        }
+
